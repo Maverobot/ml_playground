@@ -42,6 +42,8 @@ with tf.Session() as sess:
         for j in range(5):
             # Choose an action by greedily (with e chance of random action) from the Q-network
             observation = np.reshape(observation, (4, 1))
+
+            # TODO: the dimention of this a is wrong?
             a, Q = sess.run([action, Q_values],feed_dict={state:observation})
             print(a)
             # if np.random.uniform(0, 1) < random_exploration_rate:
