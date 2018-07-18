@@ -29,7 +29,7 @@ random_exploration_rate = 0.1
 
 # Training the network
 init = tf.global_variables_initializer()
-num_episodes = 1000
+num_episodes = 100000
 
 # Create lists to contain total rewards
 rewards = []
@@ -83,3 +83,7 @@ with tf.Session() as sess:
             print('Iteration #%d -- Total reward = %d.' %
                   (i, total_rewards))
         rewards.append(total_rewards)
+
+env.close()
+input("Press Enter to continue...")
+
