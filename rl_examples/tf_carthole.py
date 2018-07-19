@@ -8,6 +8,11 @@ import matplotlib.pyplot as plt
 # Definition of this game: https://github.com/openai/gym/wiki/CartPole-v0
 # This code is inspired by https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-0-q-learning-with-tables-and-neural-networks-d195264329d0
 
+def tf_choose(a, prob):
+    elems = tf.convert_to_tensor(a)
+    samples = tf.multinomial(tf.log(prob), num_samples=1) # note log-prob
+    return elems[tf.cast(samples[0][0], tf.int32)]
+
 env = gym.make('CartPole-v0')
 tf.reset_default_graph()
 
@@ -26,7 +31,8 @@ H = tf.nn.relu(tf.add(tf.matmul(state, W1), b1))
 Q_values = tf.add(tf.matmul(H, W2), b2)
 
 # TODO: this line causes local minima and the algorithm will simply not converge
-action = tf.argmax(Q_values, 1)
+Q_prob = tf.nn.softmax(Q_values)
+action = tf_choose([0,1], Q_prob)
 
 next_Q_values = tf.placeholder(shape=[1,output_n], dtype=tf.float32)
 loss = tf.reduce_sum(tf.square(next_Q_values- Q_values))
@@ -39,7 +45,7 @@ random_exploration_rate = 0.1
 
 # Training the network
 init = tf.global_variables_initializer()
-num_episodes = 100
+num_episodes = 3000
 
 # Create lists to contain total rewards
 rewards = []
@@ -56,11 +62,6 @@ with tf.Session() as sess:
             # Choose an action by greedily (with e chance of random action) from the Q-network
 
             a, Q = sess.run([action, Q_values],feed_dict={state:observation})
-            print("actions: " + str(a))
-            print("current Q: " + str(Q))
-
-            # Get the action as scalar
-            a = a[0]
 
             # Explore randomly
             if np.random.uniform(0, 1) < random_exploration_rate:
@@ -73,7 +74,6 @@ with tf.Session() as sess:
 
             # Obtain the Q' values by feeding the new state through our network
             Q1 = sess.run(Q_values,feed_dict={state:observation})
-            print("esimated next Q: " + str(Q1))
 
             # Obtain maxQ' and set our target value for chosen action.
             maxQ1 = np.max(Q1)
