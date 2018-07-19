@@ -26,8 +26,8 @@ H = tf.nn.relu(tf.add(tf.matmul(state, W1), b1))
 Q_values = tf.add(tf.matmul(H, W2), b2)
 
 # TODO: this line causes local minima and the algorithm will simply not converge
-
 action = tf.argmax(Q_values, 1)
+
 next_Q_values = tf.placeholder(shape=[1,output_n], dtype=tf.float32)
 loss = tf.reduce_sum(tf.square(next_Q_values- Q_values))
 opt = tf.train.AdamOptimizer(learning_rate=0.1)
