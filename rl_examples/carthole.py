@@ -119,7 +119,7 @@ if __name__ == '__main__':
     # Q-learning initialization
     random_exploration_rate = 0.1
     n_buckets = 20
-    n_iterations = 10000
+    n_iterations = 4000
     initial_lr = 0.99
     min_lr = 0.01
     q_table = np.zeros((n_buckets, n_buckets, n_buckets, n_buckets,
@@ -152,7 +152,11 @@ if __name__ == '__main__':
         for _ in range(100)
     ]
     print("Average score of solution = ", np.mean(solution_policy_scores))
+    input("Press Enter to continue...")
+
+    for i in range(100):
+        run_test_episode(env, solution_policy, n_buckets, True)
+        input("Run next test of the best policy found ...")
 
     env.close()
 
-    input("Press Enter to continue...")
